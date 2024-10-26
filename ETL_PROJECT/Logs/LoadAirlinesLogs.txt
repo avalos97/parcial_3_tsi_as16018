@@ -1,0 +1,14 @@
+5V,Tatonduk Outfitters Limited d/b/a Everts Air Alaska and Everts Air Cargo
+,-1071607675,10
+AI,National Aviation Company of India Limited d/b/a Air India
+,-1071607675,10
+HP,America West Airlines Inc. (Merged with US Airways 9/05. Stopped reporting 10/07.)
+,-1071607675,10
+K8,"Caribbean Sun Airlines, Inc. d/b/a World Atlantic Airlines"
+,-1071607675,10
+VB,"Aeroenlaces Nacionales, S.A. de C.V. d/b/a VivaAerobus"
+,-1071607675,10
+Y4,Concesionaria Vuela Compania De Aviacion SA de CV (Volaris)
+,-1071607675,10
+YR,"Grand Canyon Airlines, Inc. d/b/a Grand Canyon Airlines d/b/a Scenic Airlines"
+,-1071607675,10

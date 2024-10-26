@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<DTS:ConnectionManager xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:ObjectName="AVALOS_SQLEXPRESS.tsi_db"
+  DTS:DTSID="{E3759053-C97C-46A6-BF32-89A43868D27B}"
+  DTS:CreationName="OLEDB">
+  <DTS:ObjectData>
+    <DTS:ConnectionManager
+      DTS:ConnectRetryCount="1"
+      DTS:ConnectRetryInterval="5"
+      DTS:ConnectionString="Data Source=AVALOS\SQLEXPRESS;Initial Catalog=tsi_db;Provider=SQLOLEDB.1;Integrated Security=SSPI;Auto Translate=False;Application Name=SSIS-parcial_3_as16018-{E3759053-C97C-46A6-BF32-89A43868D27B}AVALOS\SQLEXPRESS.tsi_db;" />
+  </DTS:ObjectData>
+</DTS:ConnectionManager>

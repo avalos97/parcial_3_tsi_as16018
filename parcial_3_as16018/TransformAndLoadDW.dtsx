@@ -1,0 +1,302 @@
+﻿<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="10/24/2024 4:27:09 PM"
+  DTS:CreationName="Microsoft.Package"
+  DTS:CreatorComputerName="AVALOS"
+  DTS:CreatorName="AVALOS\chris"
+  DTS:DTSID="{66BD2CE0-5820-439B-93B4-A9327F521211}"
+  DTS:ExecutableType="Microsoft.Package"
+  DTS:LastModifiedProductVersion="16.0.5556.0"
+  DTS:LocaleID="1033"
+  DTS:ObjectName="Package1"
+  DTS:PackageType="5"
+  DTS:VersionBuild="26"
+  DTS:VersionGUID="{8A751793-D0B6-4FC5-87BD-10EF8BE872D3}">
+  <DTS:Property
+    DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:ConnectionManagers>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[AVALOS\SQLEXPRESS.tsi_db]"
+      DTS:CreationName="OLEDB"
+      DTS:DTSID="{0D3A9AC7-9A69-4F28-ABFF-6A2224304CE0}"
+      DTS:ObjectName="AVALOS\SQLEXPRESS.tsi_db">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectRetryCount="1"
+          DTS:ConnectRetryInterval="5"
+          DTS:ConnectionString="Data Source=AVALOS\SQLEXPRESS;Initial Catalog=tsi_db;Provider=SQLOLEDB.1;Integrated Security=SSPI;Application Name=SSIS-Package1-{0D3A9AC7-9A69-4F28-ABFF-6A2224304CE0}AVALOS\SQLEXPRESS.tsi_db;Auto Translate=False;" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+  </DTS:ConnectionManagers>
+  <DTS:Variables />
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\AirportDim"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="Poblado de AirportDim"
+      DTS:DTSID="{F1C0C662-E994-40E3-847E-6CA41069676D}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="AirportDim"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2022; © 2022 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{E3759053-C97C-46A6-BF32-89A43868D27B}"
+          SQLTask:SqlStatementSource="INSERT INTO FlightDW.AirportDim(AirportID, AirportName, City, State, StateFIPS, WAC)&#xA;SELECT DISTINCT&#xA;    OriginAirportID AS AirportID,&#xA;    OriginCityName AS AirportName,&#xA;    LEFT(OriginCityName, CHARINDEX(',', OriginCityName) - 1) AS City,&#xA;    OriginState AS State,&#xA;    OriginStateFips AS StateFIPS,&#xA;    OriginWac AS WAC&#xA;FROM dbo.StagingFlights&#xA;UNION&#xA;SELECT DISTINCT&#xA;    DestAirportID AS AirportID,&#xA;    DestCityName AS AirportName,&#xA;    LEFT(DestCityName, CHARINDEX(',', DestCityName) - 1) AS City,&#xA;    DestState AS State,&#xA;    DestStateFips AS StateFIPS,&#xA;    DestWac AS WAC&#xA;FROM dbo.StagingFlights;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\CauseDim"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="poblado de CauseDim"
+      DTS:DTSID="{E9D8F055-257F-451D-BE63-B9B908D3F390}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="CauseDim"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2022; © 2022 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{0D3A9AC7-9A69-4F28-ABFF-6A2224304CE0}"
+          SQLTask:SqlStatementSource="INSERT INTO FlightDW.CauseDim (CauseDescription)&#xA;VALUES &#xA;    ('Weather'),&#xA;    ('Mechanical'),&#xA;    ('Air Traffic Control'),&#xA;    ('Crew Issues'),&#xA;    ('Security');&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\DateDim"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="poblado de DateDim"
+      DTS:DTSID="{41B53D6A-5CB0-475C-9F8F-38179F968FE6}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="DateDim"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2022; © 2022 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{E3759053-C97C-46A6-BF32-89A43868D27B}"
+          SQLTask:SqlStatementSource="DECLARE @StartDate DATE = (SELECT MIN(FlightDate) FROM StagingFlights);&#xA;DECLARE @EndDate DATE = (SELECT MAX(FlightDate) FROM StagingFlights);&#xA;WHILE @StartDate &lt;= @EndDate&#xA;BEGIN&#xA;    INSERT INTO FlightDW.DateDim (Date, Year, Quarter, Month, DayOfMonth, DayOfWeek)&#xA;    VALUES (&#xA;        @StartDate,&#xA;        YEAR(@StartDate),&#xA;        DATEPART(QUARTER, @StartDate),&#xA;        MONTH(@StartDate),&#xA;        DAY(@StartDate),&#xA;        DATEPART(WEEKDAY, @StartDate)&#xA;    );&#xA;    SET @StartDate = DATEADD(DAY, 1, @StartDate);&#xA;END;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\FlightDim"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="poblado de FlightDim"
+      DTS:DTSID="{7CDC869A-740F-4552-84EA-D481CBF4CD1C}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="FlightDim"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2022; © 2022 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{0D3A9AC7-9A69-4F28-ABFF-6A2224304CE0}"
+          SQLTask:SqlStatementSource="INSERT INTO FlightDW.FlightDim(FlightNumber, TailNumber)&#xA;SELECT DISTINCT&#xA;    FlightNumber,&#xA;    TailNumber&#xA;FROM dbo.StagingFlights;&#xA;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+    <DTS:Executable
+      DTS:refId="Package\FlightStatusFact"
+      DTS:CreationName="Microsoft.ExecuteSQLTask"
+      DTS:Description="poblado de FlightStatusFact"
+      DTS:DTSID="{D3D7F553-5BF0-43FA-AE33-1E79FB19BAB8}"
+      DTS:ExecutableType="Microsoft.ExecuteSQLTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="FlightStatusFact"
+      DTS:TaskContact="Execute SQL Task; Microsoft Corporation; SQL Server 2022; © 2022 Microsoft Corporation; All Rights Reserved;http://www.microsoft.com/sql/support/default.asp;1"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <SQLTask:SqlTaskData
+          SQLTask:Connection="{0D3A9AC7-9A69-4F28-ABFF-6A2224304CE0}"
+          SQLTask:SqlStatementSource="INSERT INTO FlightDW.FlightStatusFact(&#xA;    FlightDateKey, AirlineKey, OriginAirportKey, DestAirportKey, FlightKey,&#xA;    CRSDepTime, DepTime, DepDelayMinutes, ArrTime, ArrDelayMinutes,&#xA;    Canceled, Diverted, AirTime, Distance, TaxiOut, TaxiIn, ActualElapsedTime,&#xA;    CRSElapsedTime, CauseKey&#xA;)&#xA;SELECT &#xA;    D.DateKey AS FlightDateKey,&#xA;    A.AirlineKey,&#xA;    O.AirportKey AS OriginAirportKey,&#xA;    Dst.AirportKey AS DestAirportKey,&#xA;    F.FlightKey,&#xA;    S.CRSDepTime,&#xA;    S.DepTime,&#xA;    S.DepDelayMinutes,&#xA;    S.ArrTime,&#xA;    S.ArrDelayMinutes,&#xA;    S.Cancelled,&#xA;    S.Diverted,&#xA;    S.AirTime,&#xA;    S.Distance,&#xA;    S.TaxiOut,&#xA;    S.TaxiIn,&#xA;    S.ActualElapsedTime,&#xA;    S.CRSElapsedTime,&#xA;    ''&#xA;FROM &#xA;    dbo.StagingFlights S&#xA;    JOIN FlightDW.DateDim D ON S.FlightDate = D.Date&#xA;    JOIN FlightDW.AirlineDim A ON S.MarketingAirlineNetwork = A.AirlineCode&#xA;    JOIN FlightDW.AirportDim O ON S.OriginAirportID = O.AirportID&#xA;    JOIN FlightDW.AirportDim Dst ON S.DestAirportID = Dst.AirportID&#xA;    JOIN FlightDW.FlightDim F ON S.FlightNumber = F.FlightNumber AND S.TailNumber = F.TailNumber;" xmlns:SQLTask="www.microsoft.com/sqlserver/dts/tasks/sqltask" />
+      </DTS:ObjectData>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:PrecedenceConstraints>
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint]"
+      DTS:CreationName=""
+      DTS:DTSID="{454B40B0-5866-4016-9BF1-42938FDCF3DA}"
+      DTS:From="Package\DateDim"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint"
+      DTS:To="Package\AirportDim" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 1]"
+      DTS:CreationName=""
+      DTS:DTSID="{1447FA7F-FCC5-45D9-9391-A916579781F1}"
+      DTS:From="Package\AirportDim"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 1"
+      DTS:To="Package\FlightDim" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 2]"
+      DTS:CreationName=""
+      DTS:DTSID="{46367D62-780A-4DF2-9908-8188BB2E1CA0}"
+      DTS:From="Package\FlightDim"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 2"
+      DTS:To="Package\CauseDim" />
+    <DTS:PrecedenceConstraint
+      DTS:refId="Package.PrecedenceConstraints[Constraint 3]"
+      DTS:CreationName=""
+      DTS:DTSID="{B751366E-7E33-47ED-82D7-1843285E55F1}"
+      DTS:From="Package\CauseDim"
+      DTS:LogicalAnd="True"
+      DTS:ObjectName="Constraint 3"
+      DTS:To="Package\FlightStatusFact" />
+  </DTS:PrecedenceConstraints>
+  <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
+<!--This CDATA section contains the layout information of the package. The section includes information such as (x,y) coordinates, width, and height.-->
+<!--If you manually edit this section and make a mistake, you can delete it. -->
+<!--The package will still be able to load normally but the previous layout information will be lost and the designer will automatically re-arrange the elements on the design surface.-->
+<Objects
+  Version="8">
+  <!--Each node below will contain properties that do not affect runtime behavior.-->
+  <Package
+    design-time-name="Package">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="16" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph" xmlns:mssgle="clr-namespace:Microsoft.SqlServer.Graph.LayoutEngine;assembly=Microsoft.SqlServer.Graph" xmlns:assembly="http://schemas.microsoft.com/winfx/2006/xaml">
+        <NodeLayout
+          Size="159,42"
+          Id="Package\FlightStatusFact"
+          TopLeft="391,222" />
+        <NodeLayout
+          Size="122,42"
+          Id="Package\DateDim"
+          TopLeft="20,5" />
+        <NodeLayout
+          Size="131,42"
+          Id="Package\AirportDim"
+          TopLeft="89,57" />
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint]"
+          TopLeft="142,26">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="12.5,31"
+              Start="0,0"
+              End="12.5,23.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="8.5,0" />
+                  <mssgle:CubicBezierSegment
+                    Point1="8.5,0"
+                    Point2="12.5,0"
+                    Point3="12.5,4" />
+                  <mssgle:LineSegment
+                    End="12.5,23.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <NodeLayout
+          Size="170,42"
+          Id="Package\FlightDim"
+          TopLeft="172,106" />
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 1]"
+          TopLeft="220,78">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="37,28"
+              Start="0,0"
+              End="37,20.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="33,0" />
+                  <mssgle:CubicBezierSegment
+                    Point1="33,0"
+                    Point2="37,0"
+                    Point3="37,4" />
+                  <mssgle:LineSegment
+                    End="37,20.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <NodeLayout
+          Size="130,42"
+          Id="Package\CauseDim"
+          TopLeft="309,165" />
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 3]"
+          TopLeft="439,186">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="31.5,36"
+              Start="0,0"
+              End="31.5,28.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="27.5,0" />
+                  <mssgle:CubicBezierSegment
+                    Point1="27.5,0"
+                    Point2="31.5,0"
+                    Point3="31.5,4" />
+                  <mssgle:LineSegment
+                    End="31.5,28.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+        <EdgeLayout
+          Id="Package.PrecedenceConstraints[Constraint 2]"
+          TopLeft="342,127">
+          <EdgeLayout.Curve>
+            <mssgle:Curve
+              StartConnector="{assembly:Null}"
+              EndConnector="32,38"
+              Start="0,0"
+              End="32,30.5">
+              <mssgle:Curve.Segments>
+                <mssgle:SegmentCollection
+                  Capacity="5">
+                  <mssgle:LineSegment
+                    End="28,0" />
+                  <mssgle:CubicBezierSegment
+                    Point1="28,0"
+                    Point2="32,0"
+                    Point3="32,4" />
+                  <mssgle:LineSegment
+                    End="32,30.5" />
+                </mssgle:SegmentCollection>
+              </mssgle:Curve.Segments>
+            </mssgle:Curve>
+          </EdgeLayout.Curve>
+          <EdgeLayout.Labels>
+            <EdgeLabelCollection />
+          </EdgeLayout.Labels>
+        </EdgeLayout>
+      </GraphLayout>
+    </LayoutInfo>
+  </Package>
+</Objects>]]></DTS:DesignTimeProperties>
+</DTS:Executable>
